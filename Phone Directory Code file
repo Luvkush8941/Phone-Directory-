@@ -1,0 +1,254 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Node
+{
+    char first_letter;
+    long long int phone_num;
+    char name[40];
+    struct Node *next;
+};
+
+char naam[40];
+struct Node *start = NULL;
+struct Node *current = NULL;
+
+
+
+
+
+
+void add()
+{
+    printf("Enter Contact Name : \n");
+    while ((getchar()) != '\n') ;
+    scanf("%[^\n]%*c", naam);
+    long long int Phone_no;
+    printf("Enter Phone number : \n");
+    scanf("%lld", &Phone_no);
+    long long int var1 = Phone_no;
+    int count = 0;
+    while (var1)
+    {
+        var1 = var1 / 10;
+        count += 1;
+    }
+    if (count != 10)
+    {
+        printf("Phone number is not valid!!!\n ");
+        return;
+    }
+    struct Node *check;
+    check = start;
+    if (current != NULL)
+    {
+        while (check != NULL)
+        {
+            if (check->phone_num == Phone_no)
+            {
+                printf("\n\nPlease enter different phone number !!!\nAs this number is already allocated to %s\n", check->name);
+                return;
+            }
+            check = check->next;
+        }
+    }
+    struct Node *new_node = (struct Node *)malloc(sizeof(struct Node));
+    strcpy(new_node->name, naam);
+    new_node->first_letter = naam[0];
+    new_node->phone_num = Phone_no;
+    new_node->next = NULL;
+
+    if (start == NULL)
+    {
+
+        start = new_node;
+        current = new_node;
+        return;
+    }
+    struct Node *ptr = start;
+
+    while (ptr->next != NULL)
+    {
+        ptr = ptr->next;
+    }
+
+    ptr->next = new_node;
+    current = new_node;
+}
+
+
+
+
+
+
+void show()
+{
+    if (start == NULL)
+    {
+        printf("Contact list is Empty!\n");
+        return;
+    }
+    struct Node *show_ptr = start;
+    printf("\n");
+    int i = 1;
+    printf("Displaying Contacts :\n");
+    while (show_ptr != NULL)
+    {
+        printf("\n%c\n", show_ptr->first_letter);
+        printf("Contact Name :%s\n", show_ptr->name);
+        printf("Contact Number :%lld\n", show_ptr->phone_num);
+        show_ptr = show_ptr->next;
+    }
+}
+
+
+
+
+
+
+
+void Delete_element()
+{   if (start == NULL)
+    {
+        printf("No Contact is there to delete!\n");
+        return;
+    }
+    char var1[30];
+    printf("Enter Contact Name to delete:\n");
+    while ((getchar()) != '\n');
+    scanf("%[^\n]%*c", var1);
+    printf("\n");
+    struct Node *ptr = start;
+    if (ptr->next == NULL && strcmp(ptr->name, var1) == 0) // It means We have to delete the first Node and we have only one node
+    {
+        printf("One contact deleted !!!\n");
+        free(start);
+        start = NULL;
+        return;
+    }
+    
+    struct Node *prev;
+    while (ptr != NULL)
+    {
+        if (strcmp(ptr->name, var1) == 0)
+        {
+            break;
+        }
+        prev = ptr;
+        ptr = ptr->next;
+    }
+    if (ptr == NULL) // contact that to be deleted is not found
+    {
+        printf("No Contact named '%s' is there in the internal storage of the device!!!\n", var1);
+        return;
+    }
+    if (ptr == start) // We got the data at the first node
+    {
+        printf("One contact deleted !!!\n");
+        start = ptr->next;
+        free(ptr);
+        return;
+    }
+    if (ptr->next == NULL) // We got the data in the last node
+    {
+        printf("One Contact deleted!\n");
+        prev->next = NULL;
+        free(ptr);
+        return;
+    }
+
+    else
+    {
+
+        printf("One contact deleted !!!\n");
+        prev->next = ptr->next;
+        free(ptr);
+
+        return;
+    }
+}
+
+
+
+
+
+
+
+void search()
+{ if (start == NULL)
+    {
+        printf("No contact is there to be searched!\n");
+        return;
+    }
+    char var2[30];
+    printf("Enter contact Name to be searched :\n");
+    while ((getchar()) != '\n');
+    scanf("%[^\n]%*c", var2);
+    printf("\n");
+    struct Node *ptr = start;
+    int count = 0;
+    printf("\nSuggested names :-\n\n");
+    printf("%c\n", var2[0]);
+    while (ptr != NULL)
+    {
+        if (ptr->first_letter == var2[0])
+        {
+            count += 1;
+            printf("%d. %s\n", count, ptr->name);
+        }
+
+        ptr = ptr->next;
+    }
+    if (count < 1)
+    {
+        printf("Contact not found !!!");
+        return;
+    }
+    else
+    {
+        ptr = start;
+        do
+        {
+            if (strcmp(ptr->name, var2) == 0)
+            {
+                printf("Contact Found!\n");
+                printf("Contact name : %s <--------\n", ptr->name);
+                printf("Contact Number :%lld\n", ptr->phone_num);
+                return;
+            }
+            ptr = ptr->next;
+        } while (ptr != NULL);
+    }
+}
+
+
+
+
+
+
+
+
+int main()
+{ int choice;
+menu:
+    printf("\n-----Phone Directory Application-----\n");
+    printf("1. Add contacts\n");
+    printf("2. Show contact\n");
+    printf("3. Remove contacts\n");
+    printf("4. Search contact.\n");
+    printf("5. Exit\n\n");
+    scanf("%d", &choice);
+    if (choice == 1)
+        add();
+    else if (choice == 2)
+        show();
+    else if (choice == 3)
+        Delete_element();
+    else if (choice == 4)
+        search();
+    else
+        exit(0);
+    goto menu;
+    return 0;
+}
